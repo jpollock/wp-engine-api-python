@@ -1,0 +1,2945 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "The API described in this document is subject to change.\n",
+    "version": "1.6.7",
+    "title": "WP Engine API",
+    "termsOfService": "https://wpengine.com/legal/terms-of-service/"
+  },
+  "host": "api.wpengineapi.com",
+  "basePath": "/v1",
+  "schemes": ["https"],
+  "paths": {
+    "/status": {
+      "get": {
+        "tags": ["status"],
+        "summary": "The status of the WP Engine Public API",
+        "description": "# Description\nThis endpoint will report the system status and any outages that might be occurring.\n",
+        "operationId": "status",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Status of API",
+            "schema": { "$ref": "#/definitions/Status" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/status",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      }
+    },
+    "/swagger": {
+      "get": {
+        "tags": ["swagger"],
+        "summary": "The current swagger specification",
+        "description": "# Description\nThis will output the current swagger specification\n",
+        "operationId": "swagger",
+        "produces": ["application/json"],
+        "responses": {
+          "200": { "description": "Current swagger specification" },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/swagger",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp"
+          },
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      }
+    },
+    "/accounts": {
+      "get": {
+        "tags": ["account"],
+        "summary": "List your WP Engine accounts",
+        "description": "# Description\nUse this to list your WP Engine accounts.\n",
+        "operationId": "listAccounts",
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          { "$ref": "#/parameters/limitParam" },
+          { "$ref": "#/parameters/offsetParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of WP Engine accounts",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "previous": { "$ref": "#/definitions/PreviousPage" },
+                "next": { "$ref": "#/definitions/NextPage" },
+                "count": { "$ref": "#/definitions/ResultsCount" },
+                "results": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/Account" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/accounts",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.querystring.offset": "method.request.querystring.offset",
+            "integration.request.querystring.limit": "method.request.querystring.limit"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      }
+    },
+    "/accounts/{account_id}": {
+      "get": {
+        "tags": ["account"],
+        "summary": "Get an account by ID",
+        "description": "Returns a single Account",
+        "operationId": "getAccount",
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "account_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of account",
+            "required": true,
+            "type": "string",
+            "x-example": "eeda3227-9a39-46ae-9e14-20958bb4e6c9"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": { "$ref": "#/definitions/Account" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/accounts/{account_id}",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "401": { "statusCode": "401" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.account_id": "method.request.path.account_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      }
+    },
+    "/accounts/{account_id}/account_users": {
+      "get": {
+        "tags": ["account_user"],
+        "summary": "List your account users",
+        "description": "",
+        "operationId": "listAccountUsers",
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "account_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of account",
+            "required": true,
+            "type": "string",
+            "x-example": "eeda3227-9a39-46ae-9e14-20958bb4e6c9"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of account users",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "results": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/AccountUser" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/accounts/{account_id}/account_users",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.account_id": "method.request.path.account_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      },
+      "post": {
+        "tags": ["account_user"],
+        "summary": "Create a new account user",
+        "description": "",
+        "operationId": "createAccountUser",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "account_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of account",
+            "required": true,
+            "type": "string",
+            "x-example": "eeda3227-9a39-46ae-9e14-20958bb4e6c9"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "##### Properties\n* user - **required** - The user that will be created\n  * account_id - **required** - The ID of the account that the account_user will belong to\n  * first_name - **required** - The first name of the user\n  * last_name - **required** - The last name of the user\n  * email - **required** - The email of the user\n  * roles -- **required** - The roles the user is allowed. The following roles are valid\n    * owner\n    * full\n    * full,billing\n    * partial\n    * partial,billing\n  * install_ids - **optional** - Used with partial role selection. The ids of the installs the user will have access to.\n",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["user"],
+              "properties": {
+                "user": {
+                  "type": "object",
+                  "description": "The user that will be created",
+                  "required": [
+                    "account_id",
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "roles"
+                  ],
+                  "properties": {
+                    "account_id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "eeda3227-9a39-46ae-9e14-20958bb4e6c9",
+                      "description": "The account ID"
+                    },
+                    "first_name": { "type": "string", "example": "Joe" },
+                    "last_name": { "type": "string", "example": "Smith" },
+                    "email": { "type": "string", "example": "joe@gmail.com" },
+                    "roles": {
+                      "type": "string",
+                      "example": "full,billing",
+                      "description": "choose from 'owner', 'full,billing', 'full', 'partial,billing', and 'partial'"
+                    },
+                    "install_ids": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": [
+                        "ddda3227-9a39-46ae-9e14-20958bb4e6c9",
+                        "qada3227-9a39-46ae-9e14-20958bb4e45y"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Your change was successful."
+                },
+                "account_user": { "$ref": "#/definitions/AccountUser" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/accounts/{account_id}/account_users",
+          "responses": {
+            "201": { "statusCode": "201" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.account_id": "method.request.path.account_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "type": "http"
+        }
+      }
+    },
+    "/accounts/{account_id}/account_users/{user_id}": {
+      "get": {
+        "tags": ["account_user"],
+        "summary": "Get an account user by ID",
+        "description": "Returns a single account user",
+        "operationId": "getAccountUser",
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "account_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of account",
+            "required": true,
+            "type": "string",
+            "x-example": "eeda3227-9a39-46ae-9e14-20958bb4e6c9"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of the user",
+            "required": true,
+            "type": "string",
+            "x-example": "a1b2c3d4-e5f6-41b2-b3d4-e5f6a1b2c3d4"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": { "$ref": "#/definitions/AccountUser" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/accounts/{account_id}/account_users/{user_id}",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.account_id": "method.request.path.account_id",
+            "integration.request.path.user_id": "method.request.path.user_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      },
+      "patch": {
+        "tags": ["account_user"],
+        "summary": "Update an account user",
+        "description": "",
+        "operationId": "updateAccountUser",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "account_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of account",
+            "required": true,
+            "type": "string",
+            "x-example": "eeda3227-9a39-46ae-9e14-20958bb4e6c9"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of the user",
+            "required": true,
+            "type": "string",
+            "x-example": "a1b2c3d4-e5f6-41b2-b3d4-e5f6a1b2c3d4"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "##### Properties\n* roles -- **required** - The roles the user is allowed. The following roles are valid\n  * owner\n  * full\n  * full,billing\n  * partial\n  * partial,billing\n* install_ids - **optional** - Used with partial role selection. The ids of the installs the user will have access to.\n",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["roles"],
+              "properties": {
+                "roles": {
+                  "type": "string",
+                  "example": "full,billing",
+                  "description": "choose from 'owner', 'full,billing', 'full', 'partial,billing', and 'partial'"
+                },
+                "install_ids": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "example": [
+                    "ddda3227-9a39-46ae-9e14-20958bb4e6c9",
+                    "qada3227-9a39-46ae-9e14-20958bb4e45y"
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Your change was successful."
+                },
+                "account_user": { "$ref": "#/definitions/AccountUser" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "500": {
+            "description": "Internal server error",
+            "schema": { "$ref": "#/definitions/InternalServerErrorResponse" }
+          },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/accounts/{account_id}/account_users/{user_id}",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "500": { "statusCode": "500" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.account_id": "method.request.path.account_id",
+            "integration.request.path.user_id": "method.request.path.user_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "PATCH",
+          "type": "http"
+        }
+      },
+      "delete": {
+        "tags": ["account_user"],
+        "summary": "Delete an account user",
+        "description": "This will remove the association this user has to this account. This delete is permanent and there is no confirmation prompt.",
+        "operationId": "deleteAccountUser",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "account_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of account",
+            "required": true,
+            "type": "string",
+            "x-example": "eeda3227-9a39-46ae-9e14-20958bb4e6c9"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of the user",
+            "required": true,
+            "type": "string",
+            "x-example": "a1b2c3d4-e5f6-41b2-b3d4-e5f6a1b2c3d4"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/accounts/{account_id}/account_users/{user_id}",
+          "responses": {
+            "204": { "statusCode": "204" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.account_id": "method.request.path.account_id",
+            "integration.request.path.user_id": "method.request.path.user_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "DELETE",
+          "type": "http"
+        }
+      }
+    },
+    "/sites": {
+      "get": {
+        "tags": ["site"],
+        "summary": "List your sites",
+        "description": "",
+        "operationId": "listSites",
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          { "$ref": "#/parameters/limitParam" },
+          { "$ref": "#/parameters/offsetParam" },
+          { "$ref": "#/parameters/account_id" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of sites",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "previous": { "$ref": "#/definitions/PreviousPage" },
+                "next": { "$ref": "#/definitions/NextPage" },
+                "count": { "$ref": "#/definitions/ResultsCount" },
+                "results": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/Site" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/sites",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.querystring.offset": "method.request.querystring.offset",
+            "integration.request.querystring.limit": "method.request.querystring.limit",
+            "integration.request.querystring.account_id": "method.request.querystring.account_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      },
+      "post": {
+        "tags": ["site"],
+        "summary": "Create a new site",
+        "description": "",
+        "operationId": "createSite",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "##### Properties\n* name - **required** - The name of the site\n* account_id - **required** - The ID of the account that the site will belong to\n",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["name", "account_id"],
+              "properties": {
+                "name": { "type": "string", "example": "Torque Magazine" },
+                "account_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "example": "eeda3227-9a39-46ae-9e14-20958bb4e6c9",
+                  "description": "The account ID"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": { "$ref": "#/definitions/Site" }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/sites",
+          "responses": {
+            "201": { "statusCode": "201" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "type": "http"
+        }
+      }
+    },
+    "/sites/{site_id}": {
+      "get": {
+        "tags": ["site"],
+        "summary": "Get a site by ID",
+        "description": "Returns a single site",
+        "operationId": "getSite",
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "site_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "The site ID",
+            "required": true,
+            "type": "string",
+            "x-example": "a1b2c3d4-e5f6-41b2-b3d4-e5f6a1b2c3d4"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": { "$ref": "#/definitions/Site" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/sites/{site_id}",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.site_id": "method.request.path.site_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      },
+      "patch": {
+        "tags": ["site"],
+        "summary": "Change a site name",
+        "description": "",
+        "operationId": "updateSite",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "site_id",
+            "in": "path",
+            "description": "The ID of the site to change the name of *(For accounts with sites enabled)*",
+            "required": true,
+            "type": "string",
+            "format": "uuid",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "##### Properties\n* name - The new name for the site\n",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The new site name",
+                  "example": "My New Name"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "schema": { "$ref": "#/definitions/Site" }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/sites/{site_id}",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.site_id": "method.request.path.site_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "PATCH",
+          "type": "http"
+        }
+      },
+      "delete": {
+        "tags": ["site"],
+        "summary": "Delete a site",
+        "description": "This will delete the site and any installs associated with this site. This delete is permanent and there is no confirmation prompt.",
+        "operationId": "deleteSite",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "site_id",
+            "in": "path",
+            "description": "The ID of the site to delete *(For accounts with sites enabled)*",
+            "required": true,
+            "type": "string",
+            "format": "uuid",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/sites/{site_id}",
+          "responses": {
+            "204": { "statusCode": "204" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.site_id": "method.request.path.site_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "DELETE",
+          "type": "http"
+        }
+      }
+    },
+    "/installs": {
+      "get": {
+        "tags": ["install"],
+        "summary": "List your WordPress installations",
+        "description": "",
+        "operationId": "listInstalls",
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          { "$ref": "#/parameters/limitParam" },
+          { "$ref": "#/parameters/offsetParam" },
+          { "$ref": "#/parameters/account_id" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of WordPress installations",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "previous": { "$ref": "#/definitions/PreviousPage" },
+                "next": { "$ref": "#/definitions/NextPage" },
+                "count": { "$ref": "#/definitions/ResultsCount" },
+                "results": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/Installation" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.querystring.offset": "method.request.querystring.offset",
+            "integration.request.querystring.limit": "method.request.querystring.limit",
+            "integration.request.querystring.account_id": "method.request.querystring.account_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      },
+      "post": {
+        "tags": ["install"],
+        "summary": "Create a new WordPress installation",
+        "description": "",
+        "operationId": "createInstall",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "##### Properties\n* name  - **required** - The name of the install\n* account_id - **required**  - The ID of the account that the install will belong to\n* site_id - **required for accounts with sites enabled** - The ID of the site that the install will belong to\n* environment - **required for accounts with sites enabled** - The site environment that the install will fill\n",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["name", "account_id"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the install"
+                },
+                "account_id": {
+                  "type": "string",
+                  "description": "The ID of the account that the install will belong to",
+                  "format": "uuid"
+                },
+                "site_id": {
+                  "type": "string",
+                  "description": "The ID of the site that the install will belong to",
+                  "format": "uuid",
+                  "x-nullable": true
+                },
+                "environment": {
+                  "type": "string",
+                  "description": "The site environment that the install will fill",
+                  "x-nullable": true,
+                  "enum": ["production", "staging", "development", null]
+                }
+              },
+              "example": {
+                "name": "torquemag",
+                "account_id": "eeda3227-9a39-46ae-9e14-20958bb4e6c9",
+                "site_id": "28c78b6d-c2da-4f09-85f5-1ad588089b2d",
+                "environment": "staging"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": { "$ref": "#/definitions/Installation" }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "429": { "description": "Too many requests" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs",
+          "responses": {
+            "201": { "statusCode": "201" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "type": "http"
+        }
+      }
+    },
+    "/installs/{install_id}": {
+      "get": {
+        "tags": ["install"],
+        "summary": "Get an install by ID",
+        "description": "Returns a single Install",
+        "operationId": "getInstall",
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "install_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of install",
+            "required": true,
+            "type": "string",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": { "$ref": "#/definitions/Installation" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs/{install_id}",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "401": { "statusCode": "401" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.install_id": "method.request.path.install_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      },
+      "delete": {
+        "tags": ["install"],
+        "summary": "Delete an install by ID",
+        "description": "This will delete the install, The delete is permanent and there is no confirmation prompt.",
+        "operationId": "deleteInstall",
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "install_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of install",
+            "required": true,
+            "type": "string",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs/{install_id}",
+          "responses": {
+            "204": { "statusCode": "204" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.install_id": "method.request.path.install_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "DELETE",
+          "type": "http"
+        }
+      },
+      "patch": {
+        "tags": ["install"],
+        "summary": "Update a WordPress installation",
+        "description": "",
+        "operationId": "updateInstall",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "install_id",
+            "in": "path",
+            "description": "The install ID",
+            "required": true,
+            "type": "string",
+            "format": "uuid",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "##### Properties\n* site_id - **optional** - The ID of the site that the install will belong to *(For accounts with sites enabled)*\n* environment - **optional** - The site environment that the install will fill *(For accounts with sites enabled)*\n",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "site_id": {
+                  "type": "string",
+                  "description": "The site ID",
+                  "format": "uuid",
+                  "example": "28c78b6d-c2da-4f09-85f5-1ad588089b2d"
+                },
+                "environment": {
+                  "type": "string",
+                  "x-nullable": true,
+                  "enum": ["production", "staging", "development", null]
+                }
+              },
+              "example": {
+                "site_id": "28c78b6d-c2da-4f09-85f5-1ad588089b2d",
+                "environment": "development"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "schema": { "$ref": "#/definitions/Installation" }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs/{install_id}",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.install_id": "method.request.path.install_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "PATCH",
+          "type": "http"
+        }
+      }
+    },
+    "/installs/{install_id}/domains": {
+      "get": {
+        "tags": ["domain"],
+        "summary": "Get the domains for an install by install id",
+        "description": "Returns domains for a specific install",
+        "operationId": "listDomains",
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          { "$ref": "#/parameters/limitParam" },
+          { "$ref": "#/parameters/offsetParam" },
+          {
+            "name": "install_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of install",
+            "required": true,
+            "type": "string",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of domains for install",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "previous": { "$ref": "#/definitions/PreviousPage" },
+                "next": { "$ref": "#/definitions/NextPage" },
+                "count": { "$ref": "#/definitions/ResultsCount" },
+                "results": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/Domain" }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs/{install_id}/domains",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.install_id": "method.request.path.install_id",
+            "integration.request.querystring.offset": "method.request.querystring.offset",
+            "integration.request.querystring.limit": "method.request.querystring.limit"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      },
+      "post": {
+        "tags": ["domain"],
+        "summary": "Add a new domain or redirect to an existing install",
+        "description": "Adds a domain or redirect to a specific install and optionally sets it as the primary domain",
+        "operationId": "createDomain",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "install_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of install",
+            "required": true,
+            "type": "string",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "##### Properties\n* name  - **required** - The name of the new domain\n* primary - **optional**  - Sets the domain as the primary domain on the install\n* redirect_to - **optional** - ID of a domain to create a redirect to\n",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["name"],
+              "properties": {
+                "name": { "type": "string" },
+                "primary": { "type": "boolean" },
+                "redirect_to": { "type": "string", "format": "uuid" }
+              },
+              "example": { "name": "example.com", "primary": true }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": { "$ref": "#/definitions/Domain" }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "429": { "description": "Too many requests" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs/{install_id}/domains",
+          "responses": {
+            "201": { "statusCode": "201" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.install_id": "method.request.path.install_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "type": "http"
+        }
+      }
+    },
+    "/installs/{install_id}/domains/bulk": {
+      "post": {
+        "tags": ["domain"],
+        "summary": "Add multiple domains and redirects to an existing install",
+        "description": "Adds multiple domains and redirects to a specific install",
+        "operationId": "createBulkDomains",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "install_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of install",
+            "required": true,
+            "type": "string",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "##### Properties\n* domains - **required** - array of domains to be created, min size: 1, max size: 20\n  * items:\n    * name  - **required** - The name of the new domain (or redirect)\n    * redirect_to - **optional**  - Name of the domain to set redirect to\n",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["domains"],
+              "properties": {
+                "domains": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 20,
+                  "items": {
+                    "type": "object",
+                    "required": ["name"],
+                    "properties": {
+                      "name": { "type": "string" },
+                      "redirect_to": { "type": "string" }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "domains": [
+                  { "name": "example.com" },
+                  { "name": "www.example.com", "redirect_to": "example.com" }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": { "$ref": "#/definitions/DomainOrRedirect" }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "429": { "description": "Too many requests" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs/{install_id}/domains/bulk",
+          "responses": {
+            "201": { "statusCode": "201" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.install_id": "method.request.path.install_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "type": "http"
+        }
+      }
+    },
+    "/installs/{install_id}/domains/{domain_id}": {
+      "get": {
+        "tags": ["domain"],
+        "summary": "Get a specific domain for an install",
+        "description": "Returns specific domain for an install",
+        "operationId": "getDomain",
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "install_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of install",
+            "required": true,
+            "type": "string",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          },
+          {
+            "name": "domain_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of domain",
+            "required": true,
+            "type": "string",
+            "x-example": "e41fa98f-ea80-4654-b229-a9b765d0863a"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": { "$ref": "#/definitions/Domain" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs/{install_id}/domains/{domain_id}",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.install_id": "method.request.path.install_id",
+            "integration.request.path.domain_id": "method.request.path.domain_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      },
+      "patch": {
+        "tags": ["domain"],
+        "summary": "Set an existing domain as primary",
+        "description": "Sets a domain as the primary. Cannot set a duplicate, wildcard, or redirected domain as the primary.",
+        "operationId": "updateDomain",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "install_id",
+            "in": "path",
+            "description": "The install ID",
+            "required": true,
+            "type": "string",
+            "format": "uuid",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          },
+          {
+            "name": "domain_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of domain",
+            "required": true,
+            "type": "string",
+            "x-example": "e41fa98f-ea80-4654-b229-a9b765d0863a"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "##### Properties\n* primary - **optional** - Boolean value to make the domain primary on the given install\n* redirect_to - **optional** - The UUID of another Domain record, or \"nil\" to remove an existing redirect.\n",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "primary": { "type": "boolean", "example": true },
+                "redirect_to": {
+                  "type": "string",
+                  "example": "6977805b-1f65-4a5d-8d36-6fe609a4d9f3"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "schema": { "$ref": "#/definitions/Domain" }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "description": "Too many requests" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs/{install_id}/domains/{domain_id}",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.install_id": "method.request.path.install_id",
+            "integration.request.path.domain_id": "method.request.path.domain_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "PATCH",
+          "type": "http"
+        }
+      },
+      "delete": {
+        "tags": ["domain"],
+        "summary": "Delete a specific domain for an install",
+        "description": "Delete specific domain for an install",
+        "operationId": "deleteDomain",
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "install_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of install",
+            "required": true,
+            "type": "string",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          },
+          {
+            "name": "domain_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of domain",
+            "required": true,
+            "type": "string",
+            "x-example": "e41fa98f-ea80-4654-b229-a9b765d0863a"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs/{install_id}/domains/{domain_id}",
+          "responses": {
+            "204": { "statusCode": "204" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.install_id": "method.request.path.install_id",
+            "integration.request.path.domain_id": "method.request.path.domain_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "DELETE",
+          "type": "http"
+        }
+      }
+    },
+    "/installs/{install_id}/domains/{domain_id}/check_status": {
+      "post": {
+        "tags": ["domain", "cdn"],
+        "summary": "Check the status of a domain",
+        "description": "Submits a request to check the status of the domain",
+        "operationId": "checkStatus",
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "install_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of install",
+            "required": true,
+            "type": "string",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          },
+          {
+            "name": "domain_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of domain",
+            "required": true,
+            "type": "string",
+            "x-example": "e41fa98f-ea80-4654-b229-a9b765d0863a"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": { "$ref": "#/definitions/Domain" }
+          },
+          "202": { "description": "Accepted" },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": {
+            "description": "Too many requests",
+            "schema": {
+              "type": "object",
+              "required": ["message"],
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "A message regarding the error that occurred on the server",
+                  "example": "Domain status checks are rate-limited to one request every 5 seconds for each install"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": { "$ref": "#/definitions/InternalServerErrorResponse" }
+          },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs/{install_id}/domains/{domain_id}/check_status",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "202": { "statusCode": "202" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "500": { "statusCode": "500" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.install_id": "method.request.path.install_id",
+            "integration.request.path.domain_id": "method.request.path.domain_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "type": "http"
+        }
+      }
+    },
+    "/installs/{install_id}/backups": {
+      "post": {
+        "tags": ["backup"],
+        "summary": "Requests a new backup of a WordPress installation",
+        "description": "Kicks off a backup of a WordPress installation.",
+        "operationId": "createBackup",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "install_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of install",
+            "required": true,
+            "type": "string",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "##### Properties\n* description - **required**  - A description of this backup.\n* notification_emails - **required** - The email address(es) that will receive an email once the backup has completed.\n",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["description", "notification_emails"],
+              "properties": {
+                "description": {
+                  "type": "string",
+                  "description": "A description of this backup."
+                },
+                "notification_emails": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "The email address(es) that will receive an email once the backup has completed."
+                }
+              },
+              "example": {
+                "description": "Taking a backup of torquemag before I start developing new features for it",
+                "notification_emails": [
+                  "myself@torquemag.com",
+                  "other_person_interested_in_backup@torquemag.com"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "schema": { "$ref": "#/definitions/Backup" }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "description": "Too many requests" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs/{install_id}/backups",
+          "responses": {
+            "202": { "statusCode": "202" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.install_id": "method.request.path.install_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "type": "http"
+        }
+      }
+    },
+    "/installs/{install_id}/backups/{backup_id}": {
+      "get": {
+        "tags": ["backup"],
+        "summary": "Retreives the status of a backup of a WordPress installation",
+        "description": "Retrieves the status of a backup of a WordPress installation.",
+        "operationId": "showBackup",
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "install_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of install",
+            "required": true,
+            "type": "string",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          },
+          {
+            "name": "backup_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of backup",
+            "required": true,
+            "type": "string",
+            "x-example": "e41fa98f-ea80-4654-b229-a9b765d0863a"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A backup",
+            "schema": { "$ref": "#/definitions/Backup" }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs/{install_id}/backups/{backup_id}",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.install_id": "method.request.path.install_id",
+            "integration.request.path.backup_id": "method.request.path.backup_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      }
+    },
+    "/installs/{install_id}/purge_cache": {
+      "post": {
+        "tags": ["cache"],
+        "summary": "Purge an install's cache",
+        "description": "This will purge the specified cache associated with the install",
+        "operationId": "purgeCache",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "install_id",
+            "in": "path",
+            "format": "uuid",
+            "description": "ID of install",
+            "required": true,
+            "type": "string",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "##### Properties\n* type - **required**  - The type of cache to be purged\n",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": { "type": "string", "enum": ["object", "page", "cdn"] }
+              },
+              "example": { "type": "object" }
+            }
+          }
+        ],
+        "responses": {
+          "202": { "description": "Accepted" },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": { "$ref": "#/definitions/NotFoundErrorResponse" }
+          },
+          "429": {
+            "description": "Too many requests",
+            "schema": {
+              "type": "object",
+              "required": ["message"],
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "A message regarding the error that occurred on the server",
+                  "example": "Object cache purges are rate-limited to one request every 60 seconds for each install"
+                }
+              }
+            }
+          },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/installs/{install_id}/purge_cache",
+          "responses": {
+            "202": { "statusCode": "202" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "404": { "statusCode": "404" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.install_id": "method.request.path.install_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "type": "http"
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get the current user",
+        "description": "Returns the currently authenticated user",
+        "operationId": "getCurrentUser",
+        "produces": ["application/json"],
+        "parameters": [{ "$ref": "#/parameters/authorization" }],
+        "responses": {
+          "200": {
+            "description": "The currently authenticated user",
+            "schema": { "$ref": "#/definitions/User" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "429": { "description": "Too many requests" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/user",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "401": { "statusCode": "401" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      }
+    },
+    "/ssh_keys": {
+      "get": {
+        "tags": ["ssh_key"],
+        "summary": "Get your SSH keys",
+        "description": "# Description\nUse this to list the SSH keys that you've added to WP Engine.\n",
+        "operationId": "listSshKeys",
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          { "$ref": "#/parameters/limitParam" },
+          { "$ref": "#/parameters/offsetParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of SSH keys",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "previous": { "$ref": "#/definitions/PreviousPage" },
+                "next": { "$ref": "#/definitions/NextPage" },
+                "count": { "$ref": "#/definitions/ResultsCount" },
+                "results": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/SshKey" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/ssh_keys",
+          "responses": {
+            "200": { "statusCode": "200" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.querystring.offset": "method.request.querystring.offset",
+            "integration.request.querystring.limit": "method.request.querystring.limit"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "http"
+        }
+      },
+      "post": {
+        "tags": ["ssh_key"],
+        "summary": "Add a new SSH key",
+        "description": "# Description\nUse this to add a new SSH key to WP Engine.\n",
+        "operationId": "createSshKey",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "##### Properties\n* public_key - **required** - The public key you want to add\n",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["public_key"],
+              "properties": {
+                "public_key": {
+                  "type": "string",
+                  "example": "ssh-rsa AAAAbcdefg+567te/4i9ASKGHtw9euaskl+Iksldfjw== joe@gmail.com"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": { "$ref": "#/definitions/SshKey" }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": { "$ref": "#/definitions/BadRequestErrorResponse" }
+          },
+          "401": {
+            "description": "Authentication Error",
+            "schema": { "$ref": "#/definitions/AuthenticationErrorResponse" }
+          },
+          "403": {
+            "description": "Not authorized",
+            "schema": { "$ref": "#/definitions/ForbiddenErrorResponse" }
+          },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/ssh_keys",
+          "responses": {
+            "201": { "statusCode": "201" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "type": "http"
+        }
+      }
+    },
+    "/ssh_keys/{ssh_key_id}": {
+      "delete": {
+        "tags": ["ssh_key"],
+        "summary": "Delete an existing SSH key",
+        "description": "# Description\nThis will delete the SSH key.\n",
+        "operationId": "deleteSshKey",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          { "$ref": "#/parameters/authorization" },
+          {
+            "name": "ssh_key_id",
+            "in": "path",
+            "description": "The ID of the SSH key to delete",
+            "required": true,
+            "type": "string",
+            "format": "uuid",
+            "x-example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": { "description": "Bad Request" },
+          "401": { "description": "Authentication Error" },
+          "403": { "description": "Not authorized" },
+          "429": { "$ref": "#/definitions/TooManyRequestsOperation" },
+          "503": { "$ref": "#/definitions/ServiceUnavailableOperation" }
+        },
+        "security": [{ "basicAuth": [] }],
+        "x-amazon-apigateway-integration": {
+          "uri": "https://my.wpengine.com/capi/v1/ssh_keys/{ssh_key_id}",
+          "responses": {
+            "204": { "statusCode": "204" },
+            "400": { "statusCode": "400" },
+            "401": { "statusCode": "401" },
+            "403": { "statusCode": "403" },
+            "429": { "statusCode": "429" },
+            "503": { "statusCode": "503" },
+            "default": { "statusCode": "500" }
+          },
+          "requestParameters": {
+            "integration.request.header.X-Request-ID": "context.requestId",
+            "integration.request.header.sourceIp": "context.identity.sourceIp",
+            "integration.request.header.authorization": "method.request.header.Authorization",
+            "integration.request.path.ssh_key_id": "method.request.path.ssh_key_id"
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "DELETE",
+          "type": "http"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "basicAuth": {
+      "type": "basic",
+      "description": "API username and password from Portal's API Access page: https://my.wpengine.com/api_access"
+    }
+  },
+  "definitions": {
+    "Status": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean", "example": true },
+        "created_on": {
+          "type": "string",
+          "example": "2018-05-17T16:20:40+00:00",
+          "description": "The time when the status was requested in rfc3339 format"
+        }
+      }
+    },
+    "Account": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "example": "eeda3227-9a39-46ae-9e14-20958bb4e6c9"
+        },
+        "name": {
+          "type": "string",
+          "description": "The account name",
+          "example": "joesaccount"
+        }
+      }
+    },
+    "AccountUser": {
+      "type": "object",
+      "required": [
+        "user_id",
+        "account_id",
+        "first_name",
+        "last_name",
+        "email",
+        "phone",
+        "invite_accepted",
+        "mfa_enabled",
+        "roles"
+      ],
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "description": "The user ID",
+          "format": "uuid",
+          "example": "28c78b6d-c2da-4f09-85f5-1ad588089b2d"
+        },
+        "account_id": {
+          "type": "string",
+          "description": "The account ID",
+          "format": "uuid",
+          "example": "eeda3227-9a39-46ae-9e14-20958bb4e6c9"
+        },
+        "first_name": {
+          "type": "string",
+          "description": "The first name of the user",
+          "example": "Joe"
+        },
+        "last_name": {
+          "type": "string",
+          "description": "The last name of the user",
+          "example": "Smith"
+        },
+        "email": {
+          "type": "string",
+          "description": "The email of the user",
+          "example": "joeSmith@test.com"
+        },
+        "phone": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "The phone number of the user",
+          "example": "1234567890"
+        },
+        "invite_accepted": {
+          "type": "boolean",
+          "description": "Whether or not the user has accepted their invitation",
+          "example": false
+        },
+        "mfa_enabled": {
+          "type": "boolean",
+          "description": "Whether or not the user has multi-factor authentication enabled",
+          "example": true
+        },
+        "roles": {
+          "type": "string",
+          "description": "The user roles",
+          "example": "billing, partial"
+        },
+        "last_owner": {
+          "type": "boolean",
+          "x-nullable": true,
+          "description": "Whether or not this owner is the last on the account. Only shows with users that have owner level roles.",
+          "example": false
+        },
+        "installs": {
+          "type": "array",
+          "description": "An array of installs tied to a partial user.",
+          "x-nullable": true,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The ID of the install",
+                "example": "3hda2d4h-9a39-o20x-9e14-20958bb4ekd8"
+              },
+              "name": {
+                "type": "string",
+                "description": "The name of the install",
+                "example": "install1"
+              }
+            }
+          }
+        }
+      }
+    },
+    "AuthenticationErrorResponse": {
+      "type": "object",
+      "required": ["message"],
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "A message regarding the error that occurred on the server",
+          "example": "Bad Credentials"
+        },
+        "documentation_url": {
+          "type": "string",
+          "description": "(Optional) A URL where documentation regarding this specific error can be found"
+        }
+      }
+    },
+    "NotFoundErrorResponse": {
+      "type": "object",
+      "required": ["message"],
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "A message regarding the error that occurred on the server",
+          "example": "Not Found"
+        },
+        "documentation_url": {
+          "type": "string",
+          "description": "(Optional) A URL where documentation regarding this specific error can be found"
+        }
+      }
+    },
+    "InternalServerErrorResponse": {
+      "type": "object",
+      "required": ["message"],
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "A message regarding the error that occurred on the server",
+          "example": "An unexpected error occurred, please try again in a few minutes"
+        }
+      }
+    },
+    "ForbiddenErrorResponse": {
+      "type": "object",
+      "required": ["message"],
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "A message regarding the error that occurred on the server",
+          "example": "You don't have permission to perform that action"
+        },
+        "documentation_url": {
+          "type": "string",
+          "description": "(Optional) A URL where documentation regarding this specific error can be found"
+        }
+      }
+    },
+    "BadRequestErrorResponse": {
+      "type": "object",
+      "required": ["message"],
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "A message regarding the error that occurred on the server",
+          "example": "Invalid Site: Name cannot be empty."
+        },
+        "documentation_url": {
+          "type": "string",
+          "description": "(Optional) A URL where documentation regarding this specific error can be found"
+        },
+        "errors": {
+          "type": "array",
+          "description": "An array of error objects describing specific errors that arose when servicing the request",
+          "items": { "$ref": "#/definitions/ResourceError" }
+        }
+      }
+    },
+    "TooManyRequestsOperation": { "description": "Too many requests" },
+    "ServiceUnavailableOperation": { "description": "Service unavailable" },
+    "Installation": {
+      "type": "object",
+      "required": ["id", "name", "account", "php_version"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+        },
+        "name": {
+          "type": "string",
+          "example": "torquemag",
+          "pattern": "^[a-z][a-z0-9]{2,13}$"
+        },
+        "account": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "example": "eeda3227-9a39-46ae-9e14-20958bb4e6c9",
+              "description": "The account ID"
+            }
+          }
+        },
+        "php_version": {
+          "type": "string",
+          "description": "The PHP version used to run WordPress (read-only)",
+          "example": "7.0",
+          "x-nullable": true
+        },
+        "status": { "type": "string", "enum": ["active", "pending"] },
+        "site": {
+          "type": "object",
+          "x-nullable": true,
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "example": "28c78b6d-c2da-4f09-85f5-1ad588089b2d"
+            }
+          }
+        },
+        "cname": {
+          "type": "string",
+          "description": "Returns the CNAME of the install",
+          "example": "mywebsite.wpengine.com"
+        },
+        "stable_ips": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "A list of stable IPs bound to the install. This will only apply to some premium/enterprise plans",
+          "example": ["1.2.3.2", "1.1.1.2"],
+          "x-nullable": true
+        },
+        "environment": {
+          "type": "string",
+          "x-nullable": true,
+          "enum": ["production", "staging", "development", null]
+        },
+        "primary_domain": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "The primary domain for the install.",
+          "example": "mywebsite.wpengine.com"
+        },
+        "is_multisite": {
+          "type": "boolean",
+          "x-nullable": true,
+          "example": false
+        }
+      }
+    },
+    "Backup": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "28c78b6d-c2da-4f09-85f5-1ad588089b2d"
+        },
+        "status": { "type": "string", "example": "requested" }
+      }
+    },
+    "ResourceError": {
+      "type": "object",
+      "required": ["resource", "field", "type", "code", "message"],
+      "properties": {
+        "resource": {
+          "type": "string",
+          "description": "The name of the resource that was being processed when the error occurred",
+          "example": "Site"
+        },
+        "field": {
+          "type": "string",
+          "description": "(Optional) The specific field associated with the error",
+          "example": "name"
+        },
+        "type": {
+          "type": "string",
+          "description": "(Optional) A type associated with the error. `invalid_value`, `access_error`, `value_unavailable`",
+          "example": "invalid_value"
+        },
+        "code": {
+          "type": "string",
+          "description": "(Optional) A machine code relating to the error that occurred with the field and resource",
+          "example": "too_long"
+        },
+        "message": {
+          "type": "string",
+          "description": "(Optional) A human-readable message relating to the error that occurred with the field and resource",
+          "example": "Name is too long (maximum is 40 characters)"
+        }
+      }
+    },
+    "Site": {
+      "type": "object",
+      "required": ["id", "name", "account"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "example": "28c78b6d-c2da-4f09-85f5-1ad588089b2d"
+        },
+        "name": { "type": "string", "example": "Torque Magazine" },
+        "account": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The account ID",
+              "format": "uuid",
+              "example": "eeda3227-9a39-46ae-9e14-20958bb4e6c9"
+            }
+          }
+        },
+        "group_name": {
+          "type": "string",
+          "example": "Overdue",
+          "x-nullable": true
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string", "description": "Tag name" },
+          "example": ["tag1", "tag2", "tag3"]
+        },
+        "installs": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "example": "294deacc-d8b8-4005-82c4-0727ba8ddde0"
+              },
+              "name": { "type": "string", "example": "torquemag" },
+              "environment": {
+                "type": "string",
+                "x-nullable": true,
+                "enum": ["production", "staging", "development", null]
+              },
+              "cname": {
+                "type": "string",
+                "description": "Returns the CNAME of the install",
+                "example": "mywebsite.wpengine.com"
+              },
+              "php_version": {
+                "type": "string",
+                "description": "The PHP version used to run WordPress",
+                "example": "7.3",
+                "x-nullable": true
+              },
+              "is_multisite": {
+                "type": "boolean",
+                "x-nullable": true,
+                "example": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "Domain": {
+      "type": "object",
+      "required": ["name", "duplicate", "primary", "id"],
+      "properties": {
+        "name": { "type": "string", "example": "torquemag.io" },
+        "duplicate": { "type": "boolean", "example": true },
+        "primary": { "type": "boolean", "example": true },
+        "id": {
+          "type": "string",
+          "example": "e41fa98f-ea80-4654-b229-a9b765d0863a"
+        },
+        "redirects_to": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "example": "e41fa98f-ea80-4006-b229-a9b765d0863a"
+              },
+              "name": { "type": "string", "example": "redirect.com" }
+            }
+          }
+        }
+      }
+    },
+    "DomainOrRedirect": {
+      "type": "object",
+      "required": ["id", "name", "duplicate", "primary"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "example": "e41fa98f-ea80-4654-b229-a9b765d0863a"
+        },
+        "name": { "type": "string", "example": "example.com" },
+        "duplicate": { "type": "boolean", "example": false },
+        "primary": { "type": "boolean", "example": true },
+        "redirects_to": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "example": "e41fa98f-ea80-4006-b229-a9b765d0863a"
+            },
+            "name": { "type": "string", "example": "redirect.com" }
+          }
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "required": ["id", "email"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "fd8e24a5-1f16-4b80-af5f-d748bcc9e64d"
+        },
+        "first_name": { "type": "string", "example": "Joe" },
+        "last_name": { "type": "string", "example": "Smith" },
+        "email": { "type": "string", "example": "joe@gmail.com" },
+        "phone_number": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "123456789"
+        }
+      }
+    },
+    "SshKey": {
+      "type": "object",
+      "properties": {
+        "comment": { "type": "string", "example": "joe@gmail.com" },
+        "created_at": {
+          "type": "string",
+          "example": "2019-09-01T15:59:24.277Z"
+        },
+        "fingerprint": {
+          "type": "string",
+          "example": "a1:b2:c3:d4:e5:46:a7:88:c9:40:d2:d7:9b:cd:42:05"
+        },
+        "uuid": {
+          "type": "string",
+          "format": "uuid",
+          "example": "e41fa98f-ea80-1f16-a7b7-d748bcc9e64d"
+        }
+      }
+    },
+    "PreviousPage": {
+      "type": "string",
+      "example": "https://api.wpengineapi.com/v1/example-endpoint?limit=100&offset=0",
+      "x-nullable": true,
+      "description": "Path to the previous page of results"
+    },
+    "NextPage": {
+      "type": "string",
+      "example": "https://api.wpengineapi.com/v1/example-endpoint?limit=100&offset=200",
+      "x-nullable": true,
+      "description": "Path to the next page of results"
+    },
+    "ResultsCount": {
+      "type": "integer",
+      "example": 225,
+      "description": "The total number of results"
+    }
+  },
+  "parameters": {
+    "account_id": {
+      "name": "account_id",
+      "in": "query",
+      "type": "string",
+      "format": "uuid",
+      "required": false,
+      "description": "(Optional) The uuid of an account",
+      "x-example": "eeda3227-9a39-46ae-9e14-20958bb4e6c9"
+    },
+    "authorization": {
+      "name": "Authorization",
+      "in": "header",
+      "type": "string",
+      "format": "uuid"
+    },
+    "limitParam": {
+      "name": "limit",
+      "in": "query",
+      "type": "integer",
+      "required": false,
+      "default": 100,
+      "minimum": 0,
+      "maximum": 100,
+      "description": "(Optional) The number of records to return"
+    },
+    "offsetParam": {
+      "name": "offset",
+      "in": "query",
+      "type": "integer",
+      "required": false,
+      "default": 0,
+      "minimum": 0,
+      "description": "(Optional) The first record of the result set to be retrieved"
+    }
+  }
+}
