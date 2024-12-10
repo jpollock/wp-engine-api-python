@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wp-engine-api"
+version = "0.0.1"
+description = "WP Engine API SDK for Python"
+readme = "README.md"
+authors = [
+    { name = "Jeremy Pollock", email = "jeremy.pollock@wpengine.com" }
+]
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = ["wpengine", "wordpress", "api", "sdk"]
+requires-python = ">=3.8"
+dependencies = [
+    "requests>=2.25.0",
+    "python-dateutil>=2.8.0",
+    "urllib3>=1.26.0",
+    "pydantic>=2.0.0",
+    "typing-extensions>=4.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "isort>=5.0.0",
+    "mypy>=1.0.0",
+    "flake8>=6.0.0",
+]
+
+[project.urls]
+Documentation = "https://wpengineapi.com/docs"
+Source = "https://github.com/jpollock/wp-engine-api-python"
+"Bug Reports" = "https://github.com/jpollock/wp-engine-api-python/issues"
+
+[tool.black]
+line-length = 100
+target-version = ["py38"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 100
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
