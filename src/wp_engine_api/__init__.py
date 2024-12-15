@@ -37,7 +37,7 @@ from wp_engine_api.models import (
     User,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.0.1"
 
 __all__ = [
     # Main client
@@ -80,4 +80,4 @@ __all__ = [
 ]
 
 # Version of the wp-engine-api package
-__version__ = "0.1.0"
+__version__ = "0.0.1"

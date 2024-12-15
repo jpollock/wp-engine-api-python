@@ -6,14 +6,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="wp-engine-api",
-    version="0.1.0",
+    name="wp-engine-api-python",
+    version="0.0.2",
     description="WP Engine API SDK for Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Jeremy Pollock",
     author_email="jeremy.pollock@wpengine.com",
-    url="https://github.com/wpengine/wp-engine-api-python",
+    url="https://github.com/jpollock/wp-engine-api-python",
     packages=find_namespace_packages(where="src"),
     package_dir={"": "src"},
     package_data={
@@ -54,7 +54,7 @@ setup(
     keywords="wpengine, wordpress, api, sdk",
     project_urls={
         "Documentation": "https://wpengineapi.com/docs",
-        "Source": "https://github.com/wpengine/wp-engine-api-python",
-        "Bug Reports": "https://github.com/wpengine/wp-engine-api-python/issues",
+        "Source": "https://github.com/jpollock/wp-engine-api-python",
+        "Bug Reports": "https://github.com/jpollock/wp-engine-api-python/issues",
     },
 )

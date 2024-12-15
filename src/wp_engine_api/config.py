@@ -88,7 +88,7 @@ class Config:
         return {
             "Authorization": f"Basic {auth}",
             "Content-Type": "application/json",
-            "User-Agent": "wp-engine-api-python/0.1.0",
+            "User-Agent": "wp-engine-api-python/0.0.1",
         }
 
     def validate(self) -> None:
